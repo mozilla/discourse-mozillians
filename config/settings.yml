@@ -1,0 +1,13 @@
+plugins:
+  mozillians_enabled:
+    default: false
+  mozillians_enable_ssl:
+    default: true
+  mozillians_url:
+    default: "https://mozillians.org"
+  mozillians_app_name:
+    default: "foobar"
+  mozillians_app_key:
+    default: "12345"
+  mozillians_group_prefix:
+    default: "mozillians"
