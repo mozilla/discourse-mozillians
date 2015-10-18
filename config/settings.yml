@@ -8,7 +8,9 @@ plugins:
     default: "https://mozillians.org"
   mozillians_app_name:
     default: "foobar"
+    shadowed_by_global: true
   mozillians_app_key:
     default: "12345"
+    shadowed_by_global: true
   mozillians_group_prefix:
     default: "mozillians"
