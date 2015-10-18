@@ -6,9 +6,9 @@
 enabled_site_setting :mozillians_enabled
 
 after_initialize do
-  require_dependency File.expand_path('../jobs/mozillians_magic.rb', __FILE__)
+  require_dependency File.expand_path("../jobs/mozillians_magic.rb", __FILE__)
 
-  module AuthExtensions
+  module MozilliansAuthExtensions
     def after_authenticate(auth_token)
       result = super(auth_token)
 
@@ -30,6 +30,44 @@ after_initialize do
   end
 
   Auth::Authenticator.descendants.each do |auth_class|
-    auth_class.prepend(AuthExtensions)
+    auth_class.prepend(MozilliansAuthExtensions)
   end
+
+  module MozilliansSessionExtensions
+    def update_mozillians
+      params.require(:login)
+
+      unless SiteSetting.mozillians_enabled?
+        render nothing: true, status: 500
+        return
+      end
+
+      RateLimiter.new(nil, "mozillians-update-hr-#{request.remote_ip}", 6, 1.hour).performed!
+      RateLimiter.new(nil, "mozillians-update-min-#{request.remote_ip}", 3, 1.minute).performed!
+
+      user = User.find_by_username_or_email(params[:login])
+      user_presence = user.present? && user.id != Discourse::SYSTEM_USER_ID
+      if user_presence
+        Jobs.enqueue(:mozillians_magic, user_id: user.id)
+      end
+
+      json = { result: "ok" }
+
+      render json: json
+
+    rescue RateLimiter::LimitExceeded
+      render_json_error(I18n.t("rate_limiter.slow_down"))
+    end
+  end
+
+  SessionController.prepend(MozilliansSessionExtensions)
+
+  Discourse::Application.routes.append do
+    resources :session, id: USERNAME_ROUTE_FORMAT, only: [:create, :destroy, :become] do
+      collection do
+        post "update_mozillians"
+      end
+    end
+  end
+
 end

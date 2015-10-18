@@ -1,0 +1,13 @@
+{{#if mozilliansEnabled}}
+  <div class="control-group mozillians">
+    <label class="control-label">Mozillians</label>
+    <div class="controls">
+      <a href {{action "updateMozillians"}} class='btn'>
+        {{fa-icon "refresh"}}
+        Update Mozillians Data
+      </a>
+      {{mozilliansProgress}}
+    </div>
+    <div class="instructions">Update data from mozillians.org without logging out and in again</div>
+  </div>
+{{/if}}

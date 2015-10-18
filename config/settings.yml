@@ -1,6 +1,7 @@
 plugins:
   mozillians_enabled:
     default: false
+    client: true
   mozillians_enable_ssl:
     default: true
   mozillians_url:
