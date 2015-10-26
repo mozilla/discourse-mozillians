@@ -1,6 +1,6 @@
 # name: discourse-mozillians
 # about: Mozillians magic for Discourse
-# version: 0.0.1
+# version: 1.0.0
 # author: Leo McArdle
 
 enabled_site_setting :mozillians_enabled
