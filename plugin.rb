@@ -30,7 +30,7 @@ after_initialize do
   end
 
   Auth::Authenticator.descendants.each do |auth_class|
-    auth_class.prepend(MozilliansAuthExtensions)
+    auth_class.send(:prepend, MozilliansAuthExtensions)
   end
 
   module MozilliansSessionExtensions
@@ -60,7 +60,7 @@ after_initialize do
     end
   end
 
-  SessionController.prepend(MozilliansSessionExtensions)
+  SessionController.send(:prepend, MozilliansSessionExtensions)
 
   Discourse::Application.routes.append do
     resources :session, id: USERNAME_ROUTE_FORMAT, only: [:create, :destroy, :become] do
