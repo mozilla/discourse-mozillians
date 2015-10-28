@@ -20,10 +20,9 @@ module Jobs
     end
 
     def purge_from_groups(user)
-      group_prefix = SiteSetting.mozillians_group_prefix
-      remove_from_group(user, group_prefix)
+      remove_from_group(user, 'mozillians')
 
-      groups = Group.where("name LIKE '#{group_prefix}*_%' ESCAPE '*'")
+      groups = Group.where("name LIKE 'mozillians*_%' ESCAPE '*'")
       groups.each do |group|
         remove_from_group(user, group.name)
       end
@@ -34,38 +33,39 @@ module Jobs
 
       return unless SiteSetting.mozillians_enabled?
 
-      mozillians_url = SiteSetting.mozillians_url
-      app_name = SiteSetting.mozillians_app_name
-      app_key = SiteSetting.mozillians_app_key
-
       user = User.find(args[:user_id])
       email = user.email
 
+      Rails.logger.info "Mozillians: getting data for #{email}"
+
       begin
-        uri = URI.parse("#{mozillians_url}/api/v1/users/?app_name=#{app_name}&app_key=#{app_key}&email=#{email}")
+        uri = URI('https://mozillians.org/api/v2/users/')
+        params = { email: email }
+        uri.query = URI.encode_www_form(params)
 
         http = Net::HTTP.new(uri.host, uri.port)
-        http.use_ssl = true if SiteSetting.mozillians_enable_ssl
+        http.use_ssl = true
+
         request = Net::HTTP::Get.new(uri.request_uri)
+        request['X-API-KEY'] = SiteSetting.mozillians_api_key
 
         response = http.request(request)
 
         if response.code.to_i == 200
           res = JSON.parse(response.body)
-          total_count = res["meta"]["total_count"]
+          count = res['count']
 
-          if total_count.to_i == 1
-            is_vouched = !!res["objects"].first["is_vouched"]
+          if count.to_i == 1
+            is_vouched = !!res['results'].first['is_vouched']
 
-            group_prefix = SiteSetting.mozillians_group_prefix
-            add_to_group(user, group_prefix)
+            add_to_group(user, 'mozillians')
 
             if is_vouched
-              remove_from_group(user, "#{group_prefix}_unvouched")
-              add_to_group(user, "#{group_prefix}_vouched")
+              remove_from_group(user, 'mozillians_unvouched')
+              add_to_group(user, 'mozillians_vouched')
             else
-              remove_from_group(user, "#{group_prefix}_vouched")
-              add_to_group(user, "#{group_prefix}_unvouched")
+              remove_from_group(user, 'mozillians_vouched')
+              add_to_group(user, 'mozillians_unvouched')
             end
 
           else
@@ -77,7 +77,7 @@ module Jobs
         end
 
       rescue Exception => details
-        puts "Failed to query API: #{details.message}"
+        Rails.logger.error "Failed to query API: #{details.message}"
         purge_from_groups(user)
       end
     end
