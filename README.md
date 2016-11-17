@@ -9,11 +9,11 @@ For a standard installation, once Discourse has launched, add groups for users t
 - `mozillians` (for everybody on mozillians.org)
 - `mozillians_unvouched` (for unvouched users of mozillians.org)
 - `mozillians_vouched` (for vouched users of mozillians.org)
+- `mozillians_nda` (for vouched users of mozillians.org within the NDA group)
 
-Then, navigate to `/admin/site_settings/category/plugins`, setting:
-- `mozillians_app_name` to the name of the app associated with your API key, and
-- `mozillians_app_key` to your API key,
-- before finally checking the `mozillians_enabled` checkbox.
+Then, navigate to `/admin/site_settings/category/plugins`:
+- Set `mozillians_api_key` to your API key
+- Check the `mozillians_enabled` checkbox
 
 You're all set! Now when users log in, they should be assigned to the groups you created based on their status on mozillians.org.
 
