@@ -1,5 +1,6 @@
 import PreferencesController from 'discourse/controllers/preferences'
 import { setting } from 'discourse/lib/computed'
+import { ajax } from 'discourse/lib/ajax'
 
 export default {
   name: 'mozillians',
@@ -11,7 +12,7 @@ export default {
         updateMozillians () {
           if (!this.get('mozilliansProgress')) {
             this.set('mozilliansProgress', '(updating)')
-            return Discourse.ajax('/session/update_mozillians', {
+            return ajax('/session/update_mozillians', {
               dataType: 'json',
               data: { login: this.get('model').get('username') },
               type: 'POST'
