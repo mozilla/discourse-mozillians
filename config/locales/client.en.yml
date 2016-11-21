@@ -1,0 +1,7 @@
+en:
+  admin_js:
+    admin:
+      logs:
+        staff_actions:
+          actions:
+            mozillians_refresh: "mozillians refresh"

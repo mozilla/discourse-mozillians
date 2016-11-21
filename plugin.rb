@@ -7,6 +7,7 @@ enabled_site_setting :mozillians_enabled
 
 after_initialize do
   require_dependency File.expand_path("../jobs/mozillians_magic.rb", __FILE__)
+  require_dependency File.expand_path("../jobs/scheduled/mozillians_refresh.rb", __FILE__)
 
   module MozilliansAuthExtensions
     def after_authenticate(auth_token)
