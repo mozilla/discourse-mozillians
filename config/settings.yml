@@ -5,3 +5,5 @@ plugins:
   mozillians_api_key:
     default: "12345"
     shadowed_by_global: true
+  mozillians_refresh_enabled:
+    default: false

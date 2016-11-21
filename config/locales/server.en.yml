@@ -2,3 +2,4 @@ en:
   site_settings:
     mozillians_enabled: "Enable Mozillians integration"
     mozillians_api_key: "Mozillians API v2 Key"
+    mozillians_refresh_enabled: "Enable daily Mozillians refresh job"
