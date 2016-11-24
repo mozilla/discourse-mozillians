@@ -14,6 +14,7 @@ For a standard installation, once Discourse has launched, add groups for users t
 Then, navigate to `/admin/site_settings/category/plugins`:
 - Set `mozillians_api_key` to your API key
 - Check the `mozillians_enabled` checkbox
+- Check the `mozillians_refresh_enabled` checkbox to enable the daily refresh job
 
 You're all set! Now when users log in, they should be assigned to the groups you created based on their status on mozillians.org.
 

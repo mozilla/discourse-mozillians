@@ -2,6 +2,7 @@
 # about: Mozillians magic for Discourse
 # version: 2.0.0
 # author: Leo McArdle
+# url: https://github.com/LeoMcA/discourse-mozillians
 
 enabled_site_setting :mozillians_enabled
 
