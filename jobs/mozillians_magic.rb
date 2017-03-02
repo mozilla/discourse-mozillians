@@ -28,9 +28,8 @@ module Jobs
       end
     end
 
-  def query_mozillians(params = {})
-      uri = URI('https://mozillians.org/api/v2/users/')
-      params = { email: @user.email }.merge(params)
+    def query_mozillians(params = { email: @user.email }, url = 'https://mozillians.org/api/v2/users/')
+      uri = URI(url)
       uri.query = URI.encode_www_form(params)
 
       http = Net::HTTP.new(uri.host, uri.port)
@@ -42,19 +41,22 @@ module Jobs
       http.request(request)
     end
 
-    def query_mozillians_group(group)
-      response = query_mozillians({ group: group })
+    def iterate_mozillians_groups(groups)
+      remove_from_group('mozillians_nda')
+      remove_from_group('mozillians_iam_project')
+      groups.each do |group|
+        name = group['name']
+        add_to_group('mozillians_nda') if name == 'nda'
+        add_to_group('mozillians_iam_project') if name == 'iam-project'
+      end
+    end
+
+    def query_mozillians_profile(_url)
+      response = query_mozillians({}, _url)
 
       if response.code.to_i == 200
-        res = JSON.parse(response.body)
-        count = res['count']
-
-        if count.to_i == 1
-          add_to_group("mozillians_#{group}")
-        else
-          remove_from_group("mozillians_#{group}")
-        end
-
+        profile = JSON.parse(response.body)
+        iterate_mozillians_groups(profile['groups']['value'])
       else
         purge_from_groups
       end
@@ -73,18 +75,19 @@ module Jobs
         response = query_mozillians
 
         if response.code.to_i == 200
-          res = JSON.parse(response.body)
-          count = res['count']
+          response = JSON.parse(response.body)
+          count = response['count']
+          result = response['results'].first
 
           if count.to_i == 1
-            is_vouched = !!res['results'].first['is_vouched']
+            is_vouched = !!result['is_vouched']
 
             add_to_group('mozillians')
 
             if is_vouched
               remove_from_group('mozillians_unvouched')
               add_to_group('mozillians_vouched')
-              query_mozillians_group('nda')
+              query_mozillians_profile(result['_url'])
             else
               remove_from_group('mozillians_vouched')
               add_to_group('mozillians_unvouched')
