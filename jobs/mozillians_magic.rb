@@ -48,6 +48,7 @@ module Jobs
         name = group['name']
         add_to_group('mozillians_nda') if name == 'nda'
         add_to_group('mozillians_iam_project') if name == 'iam-project'
+        add_to_group('mozillians_communities_advisory_group_early_2017') if name == 'communities advisory group - early 2017'
       end
     end
 

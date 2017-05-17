@@ -1,6 +1,6 @@
 # name: discourse-mozillians
 # about: Mozillians magic for Discourse
-# version: 2.1.0
+# version: 2.1.1
 # author: Leo McArdle
 # url: https://github.com/LeoMcA/discourse-mozillians
 
