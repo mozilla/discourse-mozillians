@@ -30,6 +30,10 @@ module Jobs
 
     def query_mozillians(params = { email: @user.email }, url = 'https://mozillians.org/api/v2/users/')
       uri = URI(url)
+      # workaround for mozillians api returning http urls
+      uri.scheme = 'https'
+      uri = URI(uri.to_s)
+      # end workaround
       uri.query = URI.encode_www_form(params)
 
       http = Net::HTTP.new(uri.host, uri.port)
