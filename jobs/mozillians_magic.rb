@@ -102,9 +102,10 @@ module Jobs
           purge_from_groups
         end
 
-      rescue Exception => details
-        Rails.logger.error "Failed to query API: #{details.message}"
+      rescue Exception => e
+        Rails.logger.error "Failed to query Mozillians API"
         purge_from_groups
+        raise e
       end
     end
 
